@@ -1,4 +1,12 @@
-<!DOCTYPE html>
+// generate-search.js — /search/ : one search box across the WHOLE site (recipes + shelves + hubs + tools).
+// Client-side over /search-index.json (written by generate-aisles.js). Reads ?q=, live-filters, groups by
+// type, ranks title-startsWith > title-contains > keyword-contains. Run after generate-aisles (needs the
+// index) and before inject-navbar/header/skim/awin so it gets stamped.
+const fs = require('fs'), path = require('path');
+const ROOT = 'C:/tmp/5b2b-live';
+const AD_CLIENT = 'ca-pub-8826956454892311';
+
+const page = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -10,8 +18,8 @@
 <link rel="canonical" href="https://www.5best2buy.com/search/" />
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GG5QF6LH0D"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GG5QF6LH0D');</script>
-<meta name="google-adsense-account" content="ca-pub-8826956454892311" />
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8826956454892311" crossorigin="anonymous"></script>
+<meta name="google-adsense-account" content="${AD_CLIENT}" />
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT}" crossorigin="anonymous"></script>
 <style>
   :root{--navy:#0d1421;--surface:#121e30;--blue:#5fb0ef;--gold:#f0c560;--green:#5fe39a;--text:#eef2f8;--soft:#c8d3e6;--meta:#9aabc4;--line:rgba(120,150,190,0.18);--fm:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;--fd:'Rajdhani','Arial Narrow',sans-serif;}
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -38,24 +46,6 @@
 </style>
 </head>
 <body>
-<!--THEAD--><style>
-#thead{position:sticky;top:0;z-index:9000;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:9px 14px;background:rgba(13,20,33,.97);border-bottom:1px solid rgba(120,150,190,.28);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;}
-#thead .brand{font-family:'Rajdhani','Arial Narrow',sans-serif;font-weight:700;font-size:19px;letter-spacing:.4px;color:#eef2f8;text-decoration:none;white-space:nowrap;}
-#thead .brand b{color:#f0c560;}
-#thead .tn{display:flex;gap:13px;align-items:center;}
-#thead .tn a{color:#c8d3e6;text-decoration:none;font-size:15px;font-weight:600;white-space:nowrap;}
-#thead .tn a:hover{color:#f0c560;}
-#thead form{display:flex;flex:1;min-width:150px;margin-left:auto;max-width:330px;}
-#thead input{flex:1;min-width:0;font-size:15px;padding:8px 12px;border:1px solid rgba(120,150,190,.3);border-right:none;border-radius:8px 0 0 8px;background:#121e30;color:#eef2f8;font-family:inherit;}
-#thead input:focus{outline:none;border-color:#5fe39a;}
-#thead button{border:1px solid #5fe39a;background:#5fe39a;color:#08160d;font-weight:700;font-size:15px;padding:0 14px;border-radius:0 8px 8px 0;cursor:pointer;}
-@media(max-width:600px){#thead{gap:7px 10px;}#thead .tn{order:3;gap:11px;}#thead form{order:2;max-width:none;margin-left:0;}}
-</style>
-<header id="thead">
-  <a class="brand" href="/">5best<b>2buy</b></a>
-  <nav class="tn" aria-label="Primary"><a href="/recipes/">Recipes</a><a href="/cuts/">Cuts</a><a href="/swap/">Swaps</a><a href="/shelves/">Shelves</a><a href="/states/">States</a><a href="/soda/">Soda</a><a href="/mocktails/">Mocktails</a><a href="/who-owns/">Who Owns</a></nav>
-  <form action="/search/" method="get" role="search"><input type="search" name="q" placeholder="Search recipes, shelves, makers…" aria-label="Search the site" /><button type="submit">Go</button></form>
-</header>
   <nav class="bc" aria-label="Breadcrumb"><a href="/">5best2buy.com</a> &rsaquo; Search</nav>
   <h1>Search the Hunt</h1>
   <p class="sub">Every recipe, shelf, hub, and tool in one box — 1,000+ recipes and 230+ small-maker shelves.</p>
@@ -76,7 +66,7 @@
     var q=input.value.trim().toLowerCase();
     var url=new URL(location);if(q)url.searchParams.set('q',q);else url.searchParams.delete('q');history.replaceState(null,'',url);
     if(q.length<2){res.innerHTML='';cnt.textContent='Type at least two letters.';return;}
-    var terms=q.split(/\s+/),scored=[];
+    var terms=q.split(/\\s+/),scored=[];
     for(var i=0;i<DATA.length;i++){
       var it=DATA[i],hay=(it.t+' '+(it.x||'')+' '+(it.a||'')).toLowerCase(),tl=it.t.toLowerCase(),ok=true;
       for(var j=0;j<terms.length;j++){if(hay.indexOf(terms[j])<0){ok=false;break;}}
@@ -99,50 +89,15 @@
   input.focus();
 })();
 </script>
-<!--BNAV--><style>
-body{padding-bottom:58px!important;}
-#bnav{position:fixed;left:0;right:0;bottom:0;z-index:9000;display:flex;background:rgba(13,20,33,.975);border-top:1px solid rgba(120,150,190,.28);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;}
-#bnav a{flex:1;text-align:center;padding:8px 2px 7px;color:#c8d3e6;text-decoration:none;font-size:15px;letter-spacing:.2px;line-height:1.3;min-width:0;}
-#bnav a:hover{color:#f0c560;background:rgba(255,255,255,.04);}
-#bnav a b{display:block;font-size:18px;line-height:1;margin-bottom:3px;font-weight:400;}
-@media(max-width:380px){#bnav a{font-size:15px;}}
-.floating-cart,#floatingCart,[data-list-cart]{bottom:70px!important;}
-</style><nav id="bnav" aria-label="Site navigation"><a href="/"><b>🏠</b>Home</a><a href="/shelves/"><b>🗂️</b>Shelves</a><a href="/recipes/"><b>🍽️</b>Recipes</a><a href="/what-to-eat/"><b>🎲</b>What to Eat</a><a href="/who-owns/"><b>🐙</b>Who Owns</a><a href="/list/"><b>🛒</b>List</a></nav>
-<script src="https://www.dwin2.com/pub.2961345.min.js" type="text/javascript" defer></script>
-<!--CLKTRK--><script>
-(function(){
-  function host(h){try{var u=new URL(h.replace(/&amp;/g,'&'));
-    var p=['ued','url','u','murl','destination','dest','r'];
-    for(var i=0;i<3;i++){var inner=null;
-      for(var j=0;j<p.length;j++){var v=u.searchParams.get(p[j]);
-        if(v&&/^https?%3A|^https?:/i.test(v)){inner=decodeURIComponent(v);break;}}
-      if(!inner)break; u=new URL(inner);}
-    return u.hostname.replace(/^www\./,'');}catch(e){return '';}}
-  document.addEventListener('click',function(e){
-    var a=e.target.closest&&e.target.closest('a[href^="http"]');
-    if(!a)return;
-    var d=host(a.getAttribute('href')||'');
-    if(!d||d.indexOf('5best2buy.com')>-1)return;
-    var card=a.closest('.find'), nm=card&&card.querySelector('h2');
-    if(typeof gtag!=='function')return;
-    // select_item is the standard ecommerce event and reports without setup,
-    // but it cannot be marked as a key event in a way that reads clearly. Fire a
-    // plainly-named one alongside it so "did anyone click a buy link" is one
-    // toggle in the GA4 UI rather than an interpretation.
-    gtag('event','affiliate_click',{
-      destination:d, maker:(nm?nm.textContent:d).slice(0,90),
-      shelf:location.pathname, link_kind:a.className||'link'
-    });
-    gtag('event','select_item',{
-      item_list_id:location.pathname,
-      items:[{item_id:d,item_name:(nm?nm.textContent:d).slice(0,90),
-              item_category:a.className||'link',affiliation:d}]
-    });
-  },{passive:true});
-})();
-</script><!--/CLKTRK-->
-<!--DATALINK--><div style="max-width:62ch;margin:26px auto 78px;padding:11px 14px;border:1px solid rgba(120,150,190,.25);border-left:3px solid #f0c560;border-radius:9px;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:15px;line-height:1.5;color:#9aabc4;">
-<b style="color:#f0c560;font-weight:600;">Open data.</b> Every maker on this site is published as a free dataset under <a href="https://creativecommons.org/licenses/by/4.0/" rel="license nofollow" style="color:#c8d3e6;">CC&nbsp;BY&nbsp;4.0</a> &mdash; use it in anything, commercial or not, as long as you credit <a href="/data/" style="color:#c8d3e6;">5best2buy</a>. <a href="/data/" style="color:#f0c560;text-decoration:none;">Browse the datasets &rarr;</a>
-</div><!--/DATALINK-->
 </body>
-</html>
+</html>`;
+
+fs.mkdirSync(path.join(ROOT, 'search'), { recursive: true });
+fs.writeFileSync(path.join(ROOT, 'search', 'index.html'), page);
+// add to sitemap if not present
+const smp = path.join(ROOT, 'sitemap.xml');
+if (fs.existsSync(smp)) {
+  let sm = fs.readFileSync(smp, 'utf8');
+  if (!sm.includes('/search/')) { sm = sm.replace('</urlset>', `  <url>\n    <loc>https://www.5best2buy.com/search/</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>\n</urlset>`); fs.writeFileSync(smp, sm); }
+}
+console.log('search page built: /search/');
