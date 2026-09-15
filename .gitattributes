@@ -1,0 +1,13 @@
+# The site is generated, and the generators write LF. Every blob in here is
+# already LF, and the live server sends LF.
+#
+# Without this, core.autocrlf=true rewrites all 2,549 pages to CRLF when
+# somebody clones fresh. The next build writes them back as LF, so git
+# reports the entire site as modified and a real change becomes impossible
+# to see. Found by restoring from the build branch into a clean directory
+# and rebuilding: content was identical, and git still showed 2,553 files
+# changed.
+#
+# -text means store and check out these bytes unaltered, which is what a
+# generated site wants.
+* -text
