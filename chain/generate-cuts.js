@@ -3,8 +3,23 @@
 // Reads C:/tmp/cut-content/*.js + data-ingredients.json + data-methods.json.
 // Run AFTER generate-aisles.js, BEFORE the inject chain.
 const fs = require('fs'), path = require('path');
-const ROOT = 'C:/tmp/5b2b-live';
-const SRC = 'C:/tmp/cut-content';
+
+// ---- paths resolve from this file, not from the working directory -------
+// Every path here used to be the literal string 'C:/tmp/...'. That made the
+// chain unmovable and made the restore procedure depend on cloning to one
+// exact directory. __site is the site being written; __work is the folder
+// holding the chain and the corpus. A script sitting inside the site finds
+// 'hunt' beside it; one sitting in the workspace does not. SITE_ROOT wins
+// over both when it is set.
+const __path_ = require('path'), __fs_ = require('fs');
+const __work = __fs_.existsSync(__path_.join(__dirname, 'recipe-batches'))
+  ? __dirname : __path_.resolve(__dirname, '..');
+const __site = process.env.SITE_ROOT
+  || (__fs_.existsSync(__path_.join(__dirname, 'hunt'))
+        ? __dirname : __path_.join(__work, '5b2b-live'));
+// ------------------------------------------------------------------------
+const ROOT = __site;
+const SRC = __path_.join(__work,'cut-content');
 const AD_CLIENT = 'ca-pub-8826956454892311';
 const AD_SLOT = '6318594352';   // in-article unit, wired 2026-08-12
 const DATE = new Date().toISOString().slice(0, 10);

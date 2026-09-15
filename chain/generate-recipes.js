@@ -4,9 +4,24 @@
 // <!--SIMPLE-START--> and <!--SIMPLE-END--> in /recipes/index.html.
 const fs = require('fs'), path = require('path');
 const { matchCast, groupPhoto } = require('./mascots.js');   // ingredient-character group-photo hero
+
+// ---- paths resolve from this file, not from the working directory -------
+// Every path here used to be the literal string 'C:/tmp/...'. That made the
+// chain unmovable and made the restore procedure depend on cloning to one
+// exact directory. __site is the site being written; __work is the folder
+// holding the chain and the corpus. A script sitting inside the site finds
+// 'hunt' beside it; one sitting in the workspace does not. SITE_ROOT wins
+// over both when it is set.
+const __path_ = require('path'), __fs_ = require('fs');
+const __work = __fs_.existsSync(__path_.join(__dirname, 'recipe-batches'))
+  ? __dirname : __path_.resolve(__dirname, '..');
+const __site = process.env.SITE_ROOT
+  || (__fs_.existsSync(__path_.join(__dirname, 'hunt'))
+        ? __dirname : __path_.join(__work, '5b2b-live'));
+// ------------------------------------------------------------------------
 let BYCUISINE = {};   // cuisine -> [{slug,title}] for "related recipes" internal linking (populated after `all` is built)
 const cslug = c => String(c).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-const ROOT = 'C:/tmp/5b2b-live';
+const ROOT = __site;
 const DATE = '2026-07-05';
 
 // ---- auto-relink resolver: link a `local` single-ingredient if a real shelf now exists ----
@@ -704,7 +719,7 @@ ${faqs.map(f=>`    <details style="border-top:1px solid var(--line);padding:13px
 }
 
 // ---- LOAD BATCH FILES (parallel-authored recipe data) ----
-const batchDir = 'C:/tmp/recipe-batches';
+const batchDir = __path_.join(__work,'recipe-batches');
 let all = simpleRecipes.slice();
 if(fs.existsSync(batchDir)){
   const batchFiles = fs.readdirSync(batchDir).filter(f=>f.endsWith('.js')).sort((a,b)=>(parseInt((a.match(/\d+/)||[0])[0])||0)-(parseInt((b.match(/\d+/)||[0])[0])||0));

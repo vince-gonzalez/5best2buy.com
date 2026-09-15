@@ -2,7 +2,22 @@
 // This is the seamless-flow backbone: home + primary sections + one search box, reachable from anywhere.
 // Run in the inject chain (order among injectors doesn't matter — distinct marker/position). Re-run after regen.
 const fs = require('fs'), path = require('path');
-const ROOT = 'C:/tmp/5b2b-live';
+
+// ---- paths resolve from this file, not from the working directory -------
+// Every path here used to be the literal string 'C:/tmp/...'. That made the
+// chain unmovable and made the restore procedure depend on cloning to one
+// exact directory. __site is the site being written; __work is the folder
+// holding the chain and the corpus. A script sitting inside the site finds
+// 'hunt' beside it; one sitting in the workspace does not. SITE_ROOT wins
+// over both when it is set.
+const __path_ = require('path'), __fs_ = require('fs');
+const __work = __fs_.existsSync(__path_.join(__dirname, 'recipe-batches'))
+  ? __dirname : __path_.resolve(__dirname, '..');
+const __site = process.env.SITE_ROOT
+  || (__fs_.existsSync(__path_.join(__dirname, 'hunt'))
+        ? __dirname : __path_.join(__work, '5b2b-live'));
+// ------------------------------------------------------------------------
+const ROOT = __site;
 
 const HEADER = `<!--THEAD--><style>
 #thead{position:sticky;top:0;z-index:9000;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:9px 14px;background:rgba(13,20,33,.97);border-bottom:1px solid rgba(120,150,190,.28);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;}

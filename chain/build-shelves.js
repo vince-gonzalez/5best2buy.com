@@ -1,7 +1,22 @@
 // build-shelves.js — assemble finished /hunt/<slug>/ pages from shelf-content/*.js (writer output).
 // Matches the established shelf template (HEAD @graph schema, .find cards, badges, FAQ, one open slot, recruit, disclosure).
 const fs = require('fs'), path = require('path');
-const ROOT = 'C:/tmp/5b2b-live';
+
+// ---- paths resolve from this file, not from the working directory -------
+// Every path here used to be the literal string 'C:/tmp/...'. That made the
+// chain unmovable and made the restore procedure depend on cloning to one
+// exact directory. __site is the site being written; __work is the folder
+// holding the chain and the corpus. A script sitting inside the site finds
+// 'hunt' beside it; one sitting in the workspace does not. SITE_ROOT wins
+// over both when it is set.
+const __path_ = require('path'), __fs_ = require('fs');
+const __work = __fs_.existsSync(__path_.join(__dirname, 'recipe-batches'))
+  ? __dirname : __path_.resolve(__dirname, '..');
+const __site = process.env.SITE_ROOT
+  || (__fs_.existsSync(__path_.join(__dirname, 'hunt'))
+        ? __dirname : __path_.join(__work, '5b2b-live'));
+// ------------------------------------------------------------------------
+const ROOT = __site;
 const DATE = '2026-07-07';
 
 // slug -> which aisle it joins (I control placement; writers only wrote copy)
@@ -126,8 +141,8 @@ const AISLE_NAME = { greengrocer:'The Greengrocer', pantry:'The Pantry', 'heat-a
 
 // load writer content
 let shelves = [];
-for (const f of fs.readdirSync('C:/tmp/shelf-content').filter(f=>f.endsWith('.js'))) {
-  try { shelves = shelves.concat(require('C:/tmp/shelf-content/'+f)); }
+for (const f of fs.readdirSync(__path_.join(__work,'shelf-content')).filter(f=>f.endsWith('.js'))) {
+  try { shelves = shelves.concat(require(__path_.join(__work,'shelf-content')+'/'+f)); }
   catch(e){ console.log('CONTENT PARSE FAIL', f, e.message); }
 }
 
@@ -310,4 +325,4 @@ ${faqHTML(s.faq)}
 }
 console.log('built', built, 'shelves. No. range up to', String(maxNo).padStart(3,'0'));
 console.log(JSON.stringify(manifest.map(m=>`${m.aisle}/${m.slug} (No.${m.no}, ${m.makers} makers)`), null, 0));
-fs.writeFileSync('C:/tmp/shelf-build-manifest.json', JSON.stringify(manifest,null,2));
+fs.writeFileSync(__path_.join(__work,'shelf-build-manifest.json'), JSON.stringify(manifest,null,2));

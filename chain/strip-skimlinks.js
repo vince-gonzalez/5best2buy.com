@@ -14,7 +14,22 @@
 // reversible call -- to invert it, strip the Awin tag instead and drop
 // inject-awin.js from the chain rather than inject-skim.js.
 const fs = require('fs'), path = require('path');
-const ROOT = 'C:/tmp/5b2b-live';
+
+// ---- paths resolve from this file, not from the working directory -------
+// Every path here used to be the literal string 'C:/tmp/...'. That made the
+// chain unmovable and made the restore procedure depend on cloning to one
+// exact directory. __site is the site being written; __work is the folder
+// holding the chain and the corpus. A script sitting inside the site finds
+// 'hunt' beside it; one sitting in the workspace does not. SITE_ROOT wins
+// over both when it is set.
+const __path_ = require('path'), __fs_ = require('fs');
+const __work = __fs_.existsSync(__path_.join(__dirname, 'recipe-batches'))
+  ? __dirname : __path_.resolve(__dirname, '..');
+const __site = process.env.SITE_ROOT
+  || (__fs_.existsSync(__path_.join(__dirname, 'hunt'))
+        ? __dirname : __path_.join(__work, '5b2b-live'));
+// ------------------------------------------------------------------------
+const ROOT = __site;
 const APPLY = process.argv.includes('--apply');
 
 const SKIM = '<script type="text/javascript" src="https://s.skimresources.com/js/305454X1793659.skimlinks.js"></script>';

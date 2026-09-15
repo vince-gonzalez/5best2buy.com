@@ -3,7 +3,22 @@
 // then injects a "Cook With This" block onto each /hunt/<slug>/index.html.
 // Idempotent: replaces the block between <!--XREF-START--> / <!--XREF-END--> markers.
 const fs = require('fs'), path = require('path');
-const ROOT = 'C:/tmp/5b2b-live';
+
+// ---- paths resolve from this file, not from the working directory -------
+// Every path here used to be the literal string 'C:/tmp/...'. That made the
+// chain unmovable and made the restore procedure depend on cloning to one
+// exact directory. __site is the site being written; __work is the folder
+// holding the chain and the corpus. A script sitting inside the site finds
+// 'hunt' beside it; one sitting in the workspace does not. SITE_ROOT wins
+// over both when it is set.
+const __path_ = require('path'), __fs_ = require('fs');
+const __work = __fs_.existsSync(__path_.join(__dirname, 'recipe-batches'))
+  ? __dirname : __path_.resolve(__dirname, '..');
+const __site = process.env.SITE_ROOT
+  || (__fs_.existsSync(__path_.join(__dirname, 'hunt'))
+        ? __dirname : __path_.join(__work, '5b2b-live'));
+// ------------------------------------------------------------------------
+const ROOT = __site;
 const CAP = 30; // max recipes listed per shelf (alphabetical); overflow noted as "+N more"
 
 // ---- 1. Build shelf -> [{slug,name}] from rendered recipe pages ----

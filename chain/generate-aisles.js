@@ -1,6 +1,21 @@
 const fs = require('fs');
 const path = require('path');
-const ROOT = 'C:/tmp/5b2b-live';
+
+// ---- paths resolve from this file, not from the working directory -------
+// Every path here used to be the literal string 'C:/tmp/...'. That made the
+// chain unmovable and made the restore procedure depend on cloning to one
+// exact directory. __site is the site being written; __work is the folder
+// holding the chain and the corpus. A script sitting inside the site finds
+// 'hunt' beside it; one sitting in the workspace does not. SITE_ROOT wins
+// over both when it is set.
+const __path_ = require('path'), __fs_ = require('fs');
+const __work = __fs_.existsSync(__path_.join(__dirname, 'recipe-batches'))
+  ? __dirname : __path_.resolve(__dirname, '..');
+const __site = process.env.SITE_ROOT
+  || (__fs_.existsSync(__path_.join(__dirname, 'hunt'))
+        ? __dirname : __path_.join(__work, '5b2b-live'));
+// ------------------------------------------------------------------------
+const ROOT = __site;
 const DATE = '2026-07-03';
 const AWIN = '<script src="https://www.dwin2.com/pub.2961345.min.js" type="text/javascript" defer></script>';
 // Change FEATURED each week — this is "This Week's Hunt" on the homepage.
@@ -795,7 +810,7 @@ ${AWIN}
 const SHELF_FACETS = {};   // slug -> {price:'$'|'$$'|'$$$'|'', fast:bool}
 const ALL_MAKERS = [];     // {name,line,why,url,shelf,shelfName,price,ship}
 try {
-  const cdir = 'C:/tmp/shelf-content';
+  const cdir = __path_.join(__work,'shelf-content');
   for (const f of fs.readdirSync(cdir).filter(fn=>fn.endsWith('.js'))) {
     let arr; try { arr = require(path.join(cdir, f)); } catch(e){ continue; }
     if (!Array.isArray(arr)) continue;
@@ -1019,7 +1034,7 @@ for (const [dir, kind, label] of [['cuts', 'Cut', 'butcher cut'], ['swap', 'Swap
 // Aliases go in `a`, which the search reads and never renders. They must not go
 // in `x`, which is displayed under every hit and would read as keyword spam.
 try {
-  const GROUPS = require('C:/tmp/search-aliases.js');
+  const GROUPS = require(__path_.join(__work,'search-aliases.js'));
   let tagged = 0, added = 0;
   for (const it of SI) {
     const hay = `${it.t} ${it.x || ''}`.toLowerCase();

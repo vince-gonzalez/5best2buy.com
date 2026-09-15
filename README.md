@@ -24,35 +24,44 @@ branch it is versioned, backed up, and unpublished.
 
 ## Restoring it
 
-The scripts hardcode absolute paths — `C:/tmp/5b2b-live` for output,
-`C:/tmp/recipe-batches` and friends for input. They are copied here
-verbatim rather than rewritten, so what is stored is exactly what is known
-to work. Restoring means putting them back where they expect to be:
+The scripts resolve their paths from their own location, so the workspace can
+go anywhere as long as the chain and the corpus stay together. Put both in one
+directory, with the site checked out beside them as `5b2b-live`:
 
 ```bash
-git clone https://github.com/vince-gonzalez/5best2buy.com.git C:/tmp/5b2b-live
-cd C:/tmp/5b2b-live
-git worktree add C:/tmp/_restore build
-cp -r C:/tmp/_restore/chain/*        C:/tmp/
-cp -r C:/tmp/_restore/data/*         C:/tmp/
-git worktree remove C:/tmp/_restore
+git clone https://github.com/vince-gonzalez/5best2buy.com.git <work>/5b2b-live
+cd <work>/5b2b-live
+git worktree add <work>/_restore build
+cp -r <work>/_restore/chain/*  <work>/
+cp -r <work>/_restore/data/*   <work>/
+git worktree remove <work>/_restore
 ```
 
-The clone target matters: `C:/tmp/5b2b-live` is where every script writes.
+`<work>` is yours to pick; it has been the temp folder. To write the site
+somewhere other than `<work>/5b2b-live`, set `SITE_ROOT`:
+
+```bash
+SITE_ROOT=D:/sites/5best2buy node build-all.js
+```
+
+Each script works out two things for itself. `__site` is the site being
+written: this directory when the script sits inside it, otherwise the
+`5b2b-live` beside the workspace. `__work` is the folder holding the chain and
+the corpus, found by looking for `recipe-batches`. `SITE_ROOT` beats both.
+
 
 ## Running it
 
 ```bash
-cd C:/tmp
-node 5b2b-live/build-all.js
-node gate-amazon.js C:/tmp/5b2b-live
+node <work>/5b2b-live/build-all.js
+node <work>/gate-amazon.js <work>/5b2b-live
 ```
 
-**Run it from `C:\tmp`, not from inside the repo.** `build-all.js` resolves
-each stage against the current directory and prints `ABSENT — skipped` for
-anything it cannot find, then carries on and exits 0. From the wrong
-directory you get a half-built site and no error. The tail must read
-`ran 30, skipped 0`.
+Run it from wherever the chain lives; the working directory no longer
+matters, because `build-all.js` resolves each stage against its own
+location. A stage it cannot find is now fatal rather than skipped — it used
+to print `ABSENT — skipped`, build a partial site and exit 0. The tail
+should still read `ran 30, skipped 0`.
 
 ## Keeping it current
 
@@ -86,12 +95,10 @@ A full run is about 40 seconds. The homepage legitimately changes a few
 bytes every run — it rotates the weekly shelf and the Maker of the Week
 with no cron — so a small diff there is the feature, not an injection.
 
-## Two things still worth fixing
+## One thing still worth fixing
 
-The six scripts duplicated between `C:\tmp` and `main` differ only in line
-endings today, but nothing keeps them in step. The copy that runs is the one
-in the directory you run from, which is how a fix can appear to do nothing.
-
-The absolute paths are why the restore has a required clone target. Deriving
-them from `__dirname` would make the chain runnable from anywhere, at the
-cost of touching 31 files that currently work.
+Six generators exist in both the workspace and on `main`. They now resolve to
+the same site and the same corpus from either place, so running the wrong one
+is no longer wrong — but nothing keeps their contents in step, and a fix
+applied to one copy still leaves the other behind. It cost two passes on
+`generate-data-tables.js` on 2026-09-15.

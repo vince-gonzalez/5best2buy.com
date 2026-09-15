@@ -20,6 +20,16 @@
 //         node build-all.js --list     print the stages and exit
 const { execFileSync } = require('child_process');
 const fs = require('fs');
+const path = require('path');
+
+// The chain is found relative to this file, not to the working directory.
+// existsSync below used to resolve against cwd, so running this from inside
+// the repo printed "ABSENT - skipped" for 23 of the 30 stages, built a
+// partial site and still exited 0. It now looks where the stages actually
+// are: beside this file if the chain sits here, otherwise the parent, which
+// is the workspace holding the chain and the corpus.
+const CHAIN = fs.existsSync(path.join(__dirname, 'generate-recipes.js'))
+  ? __dirname : path.resolve(__dirname, '..');
 
 const STAGES = [
   ['generate-recipes.js',       'recipe pages from batch data'],
@@ -72,14 +82,18 @@ for (let i = 0; i < STAGES.length; i++) {
   const n = i + 1;
   const [script, label, args = []] = STAGES[i];
   if (n < start) { skipped++; continue; }
-  if (!fs.existsSync(script)) {
-    console.log(`${String(n).padStart(2)}. ${script.padEnd(28)} ABSENT — skipped`);
-    skipped++;
-    continue;
+  const scriptPath = path.join(CHAIN, script);
+  if (!fs.existsSync(scriptPath)) {
+    // A missing stage is a broken chain, not something to walk past. It used
+    // to be skipped silently and the run still reported success.
+    console.log(`${String(n).padStart(2)}. ${script.padEnd(28)} MISSING at ${CHAIN}`);
+    console.log(`
+Stage ${n} (${script}) is not where the chain lives. Nothing was half-built.`);
+    process.exit(1);
   }
   process.stdout.write(`${String(n).padStart(2)}. ${script.padEnd(28)}`);
   try {
-    const out = execFileSync('node', [script, ...args], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+    const out = execFileSync('node', [scriptPath, ...args], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
     const last = out.trim().split('\n').filter(Boolean).pop() || 'ok';
     console.log(last.slice(0, 78));
     ran++;
@@ -93,4 +107,4 @@ for (let i = 0; i < STAGES.length; i++) {
 }
 
 console.log(`\nran ${ran}, skipped ${skipped}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);
-console.log('Now run the gate:  node gate-amazon.js C:/tmp/5b2b-live');
+console.log('Now run the gate:  node ' + path.join(CHAIN, 'gate-amazon.js'));

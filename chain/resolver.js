@@ -23,7 +23,22 @@
 //                 rejected as insufficiently rare while pointing at /hunt/ginger/.
 const fs = require('fs');
 
-const IDX = JSON.parse(fs.readFileSync('C:/tmp/5b2b-extension/index.json', 'utf8'));
+// ---- paths resolve from this file, not from the working directory -------
+// Every path here used to be the literal string 'C:/tmp/...'. That made the
+// chain unmovable and made the restore procedure depend on cloning to one
+// exact directory. __site is the site being written; __work is the folder
+// holding the chain and the corpus. A script sitting inside the site finds
+// 'hunt' beside it; one sitting in the workspace does not. SITE_ROOT wins
+// over both when it is set.
+const __path_ = require('path'), __fs_ = require('fs');
+const __work = __fs_.existsSync(__path_.join(__dirname, 'recipe-batches'))
+  ? __dirname : __path_.resolve(__dirname, '..');
+const __site = process.env.SITE_ROOT
+  || (__fs_.existsSync(__path_.join(__dirname, 'hunt'))
+        ? __dirname : __path_.join(__work, '5b2b-live'));
+// ------------------------------------------------------------------------
+
+const IDX = JSON.parse(fs.readFileSync(__path_.join(__work,'5b2b-extension','index.json'), 'utf8'));
 
 const STOP = new Set(('the and for with from that this pack size oz ounce ounces lb lbs pound pounds free new ' +
   'original premium natural organic best value each box bag case fresh dried ground whole large small ' +
