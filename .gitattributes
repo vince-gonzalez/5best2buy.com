@@ -1,0 +1,11 @@
+# This branch stores a build chain, not source to collaborate on. Git must
+# hand back exactly the bytes it was given.
+#
+# Without this, a clone on Windows checks these files out with CRLF. The
+# generators emit HTML from multi-line template literals, so every newline
+# inside one would become CRLF in the output - and the site is currently
+# pure LF, 0 CRLF. A restore would silently rewrite all 2,549 pages.
+#
+# Verified by cloning the branch and comparing sha256 against the working
+# copy: 237 of 238 files differed on line endings alone before this.
+* -text
