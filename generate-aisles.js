@@ -813,7 +813,12 @@ fs.writeFileSync(path.join(ROOT,'data-makers.json'), JSON.stringify(ALL_MAKERS))
 const SPOT_POOL = ALL_MAKERS.filter(m=>m.why && m.line).sort((a,b)=>a.name.localeCompare(b.name));
 const WK = Math.floor((Date.now() - Date.UTC(2026,0,5)) / 6048e5);
 const SPOTLIGHT = SPOT_POOL.length ? SPOT_POOL[((WK % SPOT_POOL.length)+SPOT_POOL.length) % SPOT_POOL.length] : null;
-const sesc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// Escape an ampersand only when it does not already begin an entity.
+// Escaping unconditionally turned a dek's &mdash; into &amp;mdash; --
+// which a browser shows as the literal text "&mdash;" -- and turned an
+// affiliate URL's &amp; into &amp;amp;, so awinaffid arrived named
+// "amp;awinaffid" and the click was not credited.
+const sesc = s => String(s||'').replace(/&(?!(?:[a-zA-Z][a-zA-Z0-9]{1,31}|#[0-9]{1,7}|#[xX][0-9a-fA-F]{1,6});)/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const SPOTLIGHT_CARD = SPOTLIGHT ? `<a href="/hunt/${SPOTLIGHT.shelf}/" style="display:block;text-decoration:none;background:linear-gradient(135deg,#1a2e1f,#122019);border:1px solid rgba(95,227,154,.5);border-radius:12px;padding:16px 18px;margin:30px 0 0;">
     <div style="font-family:var(--fm);font-size:12.5px;letter-spacing:2px;text-transform:uppercase;color:var(--green);margin-bottom:4px;">🔦 Maker of the Week</div>
     <div style="font-family:var(--fd);font-size:23px;font-weight:700;color:var(--text);letter-spacing:.3px;">${sesc(SPOTLIGHT.name)}</div>
