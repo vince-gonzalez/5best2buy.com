@@ -54,6 +54,29 @@ anything it cannot find, then carries on and exits 0. From the wrong
 directory you get a half-built site and no error. The tail must read
 `ran 30, skipped 0`.
 
+## Keeping it current
+
+The reason this branch exists is that the previous backup went stale without
+saying so. `OneDrive\Desktop\tmp-tooling-archive` looked like a safety net
+for weeks while `generate-recipes.js` drifted 1,751 bytes from the copy that
+actually ran. Restoring from it would have rebuilt the site wrong, quietly.
+
+So after any change to a generator or to the corpus, push it here:
+
+```bash
+cd C:/tmp/5b2b-live
+git worktree add C:/tmp/_build-wt build
+cp C:/tmp/*.js                   C:/tmp/_build-wt/chain/
+cp -r C:/tmp/recipe-batches/*    C:/tmp/_build-wt/data/recipe-batches/
+cp -r C:/tmp/shelf-content/*     C:/tmp/_build-wt/data/shelf-content/
+cp -r C:/tmp/cut-content/*       C:/tmp/_build-wt/data/cut-content/
+cd C:/tmp/_build-wt && git add -A && git commit -m "refresh" && git push
+cd C:/tmp/5b2b-live && git worktree remove C:/tmp/_build-wt
+```
+
+To find out whether it has drifted, compare hashes rather than dates — a
+file can be touched without changing and changed without being touched.
+
 ## Checking a build
 
     pages 2549 · sitemap 2551 · adsense 475 · awin 2
