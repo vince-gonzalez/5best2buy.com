@@ -4,7 +4,7 @@
  "published": "2026-08-12",
  "license": "CC BY 4.0",
  "source": "https://www.5best2buy.com/data/independent-makers/",
- "records": 1471,
+ "records": 1474,
  "data": [
   {
    "maker": "123Dough",
@@ -1874,6 +1874,13 @@
    "state": "California",
    "categories": "5 Artisan Cheeses Worth the Hunt",
    "url": "https://cowgirlcreamery.com/"
+  },
+  {
+   "maker": "Cozyslip",
+   "city": "",
+   "state": "",
+   "categories": "Herbal & Wellness Tea Worth the Hunt",
+   "url": "https://thecozyslip.com/"
   },
   {
    "maker": "Craic Sauce",
@@ -4163,6 +4170,13 @@
    "state": "California",
    "categories": "Artichoke Hearts & Marinated Veg Worth the Hunt; Pepperoncini & Pickled Peppers Worth the Hunt; Roasted & Marinated Peppers Worth the Hunt",
    "url": "https://jeffsgardenfoods.com/"
+  },
+  {
+   "maker": "Jerky Munch",
+   "city": "Jackson",
+   "state": "New Jersey",
+   "categories": "Kosher Jerky & Meat Snacks Worth the Hunt",
+   "url": "https://jerkymunch.com/"
   },
   {
    "maker": "Jersey Italian Gravy",
@@ -9448,6 +9462,13 @@
    "state": "",
    "categories": "Fresh Truffles (Seasonal) Worth the Hunt",
    "url": "https://www.truffleconnectionpnw.com/truffle-products"
+  },
+  {
+   "maker": "TruffleCart",
+   "city": "",
+   "state": "",
+   "categories": "Fresh Truffles (Seasonal) Worth the Hunt",
+   "url": "https://trufflecart.com/collections/fresh-truffles"
   },
   {
    "maker": "Tsar Nicoulai",

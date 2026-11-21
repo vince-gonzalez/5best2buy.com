@@ -4,7 +4,7 @@
  "published": "2026-08-12",
  "license": "CC BY 4.0",
  "source": "https://www.5best2buy.com/data/kosher-certified/",
- "records": 58,
+ "records": 59,
  "data": [
   {
    "maker": "Abeles & Heymann",
@@ -197,6 +197,14 @@
    "state": "New York",
    "categories": "Kosher Salami, Hot Dogs & Knishes Worth the Hunt",
    "url": "https://www.jacksgourmet.com/"
+  },
+  {
+   "maker": "Jerky Munch",
+   "certifier": "Central Rabbinical Congress (CRC Hisachdus)",
+   "city": "Jackson",
+   "state": "New Jersey",
+   "categories": "Kosher Jerky & Meat Snacks Worth the Hunt",
+   "url": "https://jerkymunch.com/"
   },
   {
    "maker": "KOL Foods",
