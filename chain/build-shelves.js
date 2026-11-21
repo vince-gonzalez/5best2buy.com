@@ -168,6 +168,29 @@ function badges(m){
     `<span title="5best2buy rating: ${m.rating||5} of 5" style="color:var(--gold);letter-spacing:2px;font-size:15px;">${stars(m.rating||5)}</span>`+
     `<span title="${SHIPTITLE[m.ship]||SHIPTITLE.fast}" style="color:var(--soft);letter-spacing:.2px;">${SHIP[m.ship]||SHIP.fast}</span></div>`;
 }
+// ---- runners-up -----------------------------------------------------------
+// A shelf is five. When a sixth maker genuinely belongs on the page but there
+// is no weak link to displace, they go here instead of quietly becoming a sixth
+// "best" — the number in the name has to keep meaning something.
+//
+// Deliberately NOT in the ItemList: that list represents the five, and a
+// runner-up is by definition not in it. Rendered lighter than a maker card so
+// the distinction is visible rather than a matter of reading the heading.
+function runnerUpBlock(s){
+  const rs = s.runnersUp || [];
+  if (!rs.length) return '';
+  return `
+  <h2 class="ru-head" style="font-family:var(--fd);font-size:22px;color:var(--soft);margin:38px 0 4px;">Runner${rs.length>1?'s':''}-up</h2>
+  <p style="color:var(--soft);max-width:62ch;margin:0 0 16px;font-size:15px;">Didn't make the five, worth knowing about anyway.</p>
+` + rs.map(m => `  <div class="find runner-up" style="border-left:3px solid var(--line);opacity:.92;" id="ru-${String(m.name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}">
+    <div class="rank" style="color:var(--soft);">${esc(m.rank)}</div>
+    <h2>${esc(m.name)}</h2>
+    <div class="maker">${esc(m.line)}</div>
+    <p>${m.body}</p>
+    <a class="hunt" href="${esc(m.url)}" rel="sponsored nofollow" target="_blank">See it at ${esc(m.name)} &rarr;</a>
+  </div>`).join('\n\n');
+}
+
 function makerCard(m){
   return `  <div class="find" id="m-${String(m.name).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}">
     <div class="rank">${esc(m.rank)}</div>
@@ -293,6 +316,7 @@ ${STYLE}
   </div>
   <!--/LISTW-->
 ${s.makers.map(makerCard).join('\n\n')}
+${runnerUpBlock(s)}
 
   <div class="find open">
     <div class="rank">Open Spot</div>

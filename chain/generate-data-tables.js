@@ -46,7 +46,9 @@ const ST = { AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California'
 // Only bodies that actually issue certificates. Order matters: longest first so
 // "Orthodox Union" is not swallowed by a shorter alternative.
 const HALAL_BODIES = ['American Halal Foundation','Halal Advocates of America','Halal Advocates','Halal Transactions of Omaha','Islamic Services of America','IFANCA','HFSAA','HMS Halal','ISWA','ISA','AHF'];
-const KOSHER_BODIES = ['Vaad Hakashrus of the Five Towns','New Square Kashrus Council','Kehilah Kashrus','Orthodox Rabbinical Board','Scroll-K','EarthKosher','Earth Kosher','Orthodox Union','Chicago Rabbinical Council','Kosher Supervision of America','Star-K','OK Kosher','Kof-K','cRc','CRC','KSA','Vaad','OU'];
+const KOSHER_BODIES = ['Vaad Hakashrus of the Five Towns','New Square Kashrus Council','Kehilah Kashrus','Orthodox Rabbinical Board','Scroll-K','EarthKosher','Earth Kosher','Orthodox Union','Chicago Rabbinical Council','Kosher Supervision of America','Star-K','OK Kosher','Kof-K','CRC Hisachdus','Hisachdus','cRc','CRC','KSA','Vaad','OU'];
+// CRC Hisachdus (Williamsburg) and the cRc (Chicago) are two different agencies.
+// The bare 'CRC' below used to catch both, so 'CRC Hisachdus' has to be tried first.
 
 // One body, one value. "OU" and "Orthodox Union" are the same agency, and a
 // dataset that reports both as distinct is broken for anyone who tries to
@@ -55,6 +57,7 @@ const CANON = {
   'OU': 'Orthodox Union (OU)', 'Orthodox Union': 'Orthodox Union (OU)',
   'cRc': 'Chicago Rabbinical Council (cRc)', 'CRC': 'Chicago Rabbinical Council (cRc)',
   'Chicago Rabbinical Council': 'Chicago Rabbinical Council (cRc)',
+  'CRC Hisachdus': 'Central Rabbinical Congress (CRC Hisachdus)', 'Hisachdus': 'Central Rabbinical Congress (CRC Hisachdus)',
   'KSA': 'Kosher Supervision of America (KSA)',
   'Kosher Supervision of America': 'Kosher Supervision of America (KSA)',
   'Star-K': 'Star-K', 'OK Kosher': 'OK Kosher', 'Kof-K': 'Kof-K', 'Vaad': 'Local Vaad', 'Scroll-K': 'Scroll-K (Vaad HaKashrus of Denver)',

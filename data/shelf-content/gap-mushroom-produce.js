@@ -365,6 +365,17 @@ module.exports = [
       price: "$$",
       rating: 4,
       ship: "fast"
+    },
+    {
+      name: "TruffleCart",
+      url: "https://trufflecart.com/collections/fresh-truffles",
+      rank: "In the Truffle Trade Since 1999",
+      line: "California · European black winter, white & Burgundy",
+      body: "A California truffle importer run by Euro Mushrooms, whose founders have worked the truffle trade since 1999. Every truffle is listed by species with its Latin name, so you can tell a true white (Tuber magnatum) from a much cheaper Bianchetto before you pay. Black winter truffles start at 50 grams, graded from First Class down to a cheaper grade they call Back of the House. Fresh orders ship expedited, generally overnight.",
+      why: "Their Rare Finds page photographs single truffles on the scale and says where each one came from, down to the dog: a 1.04 kg white found by a dog named Lola and her handler in North Macedonia's Vardar Valley.",
+      price: "$$$",
+      rating: 4,
+      ship: "fast"
     }
   ],
   faq: [
